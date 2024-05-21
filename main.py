@@ -13,17 +13,30 @@ FPS = 60
 player_y = 360
 player_w = 20
 player_h = 100
-player_vel = 8
+player_vel = 5
 
 ball_x = screenWidth / 2
 ball_y = screenHeight / 2
 
-ball_vel = [5, 5]
+ball_vel = [0, 0]
 
-start_game = False
+
+#BOT CONFIG
+bot_y = 360
+bot_w = 20
+bot_h = 100
+bot_vel = 5
 
 #ball draw
 ball = pygame.draw.circle(screen, 'white', (ball_x, ball_y), 8)
+
+#points
+player1_points = 0
+player2_points = 0
+
+main_font = pygame.font.SysFont('none', 32)
+
+start_game = False
 
 running = True
 while running:
@@ -34,6 +47,8 @@ while running:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+
+    
 
     #player movement
     keys = pygame.key.get_pressed()
@@ -58,11 +73,10 @@ while running:
 
     ball = ball.move(ball_vel)
 
-
     ball_x += ball_vel[0]
     ball_y += ball_vel[1]
-    if ball.left <= 0 or ball.right >= screenWidth:
-        ball_vel[0] = -ball_vel[0]
+    '''if ball.left <= 0 or ball.right >= screenWidth:
+        ball_vel[0] = -ball_vel[0]'''
     if ball.top <= 0 or ball.bottom >= screenHeight:
         ball_vel[1] = -ball_vel[1]
 
@@ -78,8 +92,42 @@ while running:
 
     if player_rect.colliderect(ball):
         ball_vel[0] = -ball_vel[0]
+        ball_vel[0] += 1
+        ball_vel[1] += 1
 
-    print(ball_x, ball_y)
+
+
+    #BOT DRAWING
+    bot_rect = pygame.Rect(1200, bot_y - (bot_h / 2), bot_w, bot_h)
+    pygame.draw.rect(screen, 'white', bot_rect)
+
+    if bot_y > ball_y:
+        bot_y -= bot_vel
+    elif bot_y < ball_y:
+        bot_y += bot_vel
+    if bot_rect.colliderect(ball):
+        ball_vel[0] = -ball_vel[0]
+        ball_vel[0] -= 1
+        ball_vel[1] -= 1
+
+
+    print(ball_vel)
+
+    #SEE WHO WINS!!!
+    if ball.left < 0:
+        player2_points += 1
+        ball_x = screenWidth / 2
+        ball_y = screenHeight / 2
+        ball_vel = 0, 0
+    if ball.right > screenWidth:
+        player1_points += 1
+        ball_x = screenWidth / 2
+        ball_y = screenHeight / 2
+        ball_vel = 0, 0
+    
+    points = main_font.render(f"{player1_points} - {player2_points}", True, 'white')
+    screen.blit(points, ((screenWidth / 2 - 20), 40))
+
 
     pygame.display.update()
     clock.tick(FPS)
