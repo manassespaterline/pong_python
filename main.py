@@ -10,6 +10,7 @@ pygame.display.set_caption("Pong")
 clock = pygame.time.Clock()
 FPS = 60
 
+player_x = 80
 player_y = 360
 player_w = 20
 player_h = 100
@@ -18,10 +19,14 @@ player_vel = 5
 ball_x = screenWidth / 2
 ball_y = screenHeight / 2
 
-ball_vel = [0, 0]
+
+ball_vel_x = 6
+ball_vel_y = 6
+ball_vel = [ball_vel_x, ball_vel_y]
 
 
 #BOT CONFIG
+bot_x = 1200
 bot_y = 360
 bot_w = 20
 bot_h = 100
@@ -54,16 +59,20 @@ while running:
     keys = pygame.key.get_pressed()
     if keys[K_w]:
         player_y -= player_vel
+        start_game = True
     elif keys[K_s]:
         player_y += player_vel
+        start_game = True
     elif keys[K_UP]:
         player_y -= player_vel
+        start_game = True
     elif keys[K_DOWN]:
         player_y += player_vel
+        start_game = True
         
 
     #player draw
-    player_rect = pygame.Rect(80, player_y - (player_h / 2), player_w, player_h)
+    player_rect = pygame.Rect(player_x, player_y - (player_h / 2), player_w, player_h)
     pygame.draw.rect(screen, 'white', player_rect)
 
     if player_rect.top <= 0:
@@ -73,8 +82,9 @@ while running:
 
     ball = ball.move(ball_vel)
 
-    ball_x += ball_vel[0]
-    ball_y += ball_vel[1]
+    if start_game:
+        ball_x += ball_vel[0]
+        ball_y += ball_vel[1]
     '''if ball.left <= 0 or ball.right >= screenWidth:
         ball_vel[0] = -ball_vel[0]'''
     if ball.top <= 0 or ball.bottom >= screenHeight:
@@ -98,7 +108,7 @@ while running:
 
 
     #BOT DRAWING
-    bot_rect = pygame.Rect(1200, bot_y - (bot_h / 2), bot_w, bot_h)
+    bot_rect = pygame.Rect(bot_x, bot_y - (bot_h / 2), bot_w, bot_h)
     pygame.draw.rect(screen, 'white', bot_rect)
 
     if bot_y > ball_y:
@@ -111,23 +121,46 @@ while running:
         ball_vel[1] -= 1
 
 
-    print(ball_vel)
-
     #SEE WHO WINS!!!
     if ball.left < 0:
         player2_points += 1
+
+        player_x = 80
+        player_y = 360
+
+        bot_x = 1200
+        bot_y = 360
+
+        ball_vel_x = 6
+        ball_vel_y = 6
+        ball_vel = [ball_vel_x, ball_vel_y]
+
         ball_x = screenWidth / 2
         ball_y = screenHeight / 2
-        ball_vel = 0, 0
+        start_game = False
+
+
     if ball.right > screenWidth:
         player1_points += 1
+
+        player_x = 80
+        player_y = 360
+
+        bot_x = 1200
+        bot_y = 360
+
+        ball_vel_x = 6
+        ball_vel_y = 6
+        ball_vel = [ball_vel_x, ball_vel_y]
+
         ball_x = screenWidth / 2
         ball_y = screenHeight / 2
-        ball_vel = 0, 0
+        start_game = False
     
     points = main_font.render(f"{player1_points} - {player2_points}", True, 'white')
     screen.blit(points, ((screenWidth / 2 - 20), 40))
 
+    print(ball_vel)
 
     pygame.display.update()
     clock.tick(FPS)
