@@ -50,7 +50,31 @@ player2_win = False
 
 
 
+bot_playing = False
+friend_playing = False
+
+
 def menu():
+
+    global bot_playing
+    global friend_playing
+
+    global ball_vel_x
+    global ball_vel_y
+
+    global start_game
+
+    ball_vel_x = 6
+    ball_vel_y = 6
+
+    start_game = False
+
+    global bot_playing
+    global friend_playing
+
+    bot_playing = False
+    friend_playing = False
+
 
     title = main_font.render("The Pong Game", True, 'white')
 
@@ -83,9 +107,11 @@ def menu():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if play_bot_rect.collidepoint(mouse_pos):
+                    bot_playing = True
                     running_menu = False
                 if play_local_rect.collidepoint(mouse_pos):
-                    print("frined")
+                    friend_playing = True
+                    running_menu = False
                 if configuration_rect.collidepoint(mouse_pos):
                     print("config")
                 if exit_rect.collidepoint(mouse_pos):
@@ -160,6 +186,9 @@ def win():
     global player2_points
     global player2_win
 
+    global bot_playing
+    global friend_playing
+
     running_win = True
     while running_win:
 
@@ -168,6 +197,9 @@ def win():
         player1_points = 0
         player2_points = 0
 
+        bot_playing = False
+        friend_playing = False
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -175,6 +207,7 @@ def win():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     running_win = False
+                    menu()
 
         if player1_win:
             p1_win_txt = main_font.render("PLAYER 1 WINS!", True, 'white')
@@ -204,7 +237,7 @@ while running:
             sys.exit()
 
     
-    #player movement
+    # PLAYER MOVEMENT
     keys = pygame.key.get_pressed()
     if keys[K_w]:
         player_y -= player_vel
@@ -212,18 +245,13 @@ while running:
     elif keys[K_s]:
         player_y += player_vel
         start_game = True
-    elif keys[K_UP]:
-        player_y -= player_vel
-        start_game = True
-    elif keys[K_DOWN]:
-        player_y += player_vel
-        start_game = True
         
 
-    #player draw
+    # PLAYER DRAWING
     player_rect = pygame.Rect(player_x, player_y - (player_h / 2), player_w, player_h)
     pygame.draw.rect(screen, 'white', player_rect)
 
+    # PLAYER BORDER LIMIT
     if player_rect.top <= 0:
         player_y = 0 + player_h / 2
     elif player_rect.bottom >= screenHeight:
@@ -238,7 +266,7 @@ while running:
     if ball.top <= 0 or ball.bottom >= screenHeight:
         ball_vel[1] = -ball_vel[1]
 
-    #ball draw
+    # BALL DRAWING
     ball = pygame.draw.circle(screen, 'white', (ball_x, ball_y), 8)
 
     if player_rect.colliderect(ball):
@@ -247,14 +275,33 @@ while running:
         ball_vel[1] += 1
 
 
-    #BOT DRAWING
+    # BOT DRAWING
     bot_rect = pygame.Rect(bot_x, bot_y - (bot_h / 2), bot_w, bot_h)
     pygame.draw.rect(screen, 'white', bot_rect)
 
-    if bot_y > ball_y:
-        bot_y -= bot_vel
-    elif bot_y < ball_y:
-        bot_y += bot_vel
+    # BOT BORDER LIMIT
+    if bot_rect.top <= 0:
+        bot_y = 0 + bot_h / 2
+    elif bot_rect.bottom >= screenHeight:
+        bot_y = screenHeight - 50
+
+    # BOT CONTROL P2
+    if bot_playing:
+        if bot_y > ball_y:
+            bot_y -= bot_vel
+        elif bot_y < ball_y:
+            bot_y += bot_vel
+
+    # FRIEND CONTROL P2
+    if friend_playing:
+        if keys[pygame.K_UP]:
+            bot_y -= bot_vel
+            start_game = True
+        elif keys[pygame.K_DOWN]:
+            bot_y += bot_vel
+            start_game = True
+
+    # P2 BALL COLLISION
     if bot_rect.colliderect(ball):
         ball_vel[0] = -ball_vel[0]
         ball_vel[0] -= 1
@@ -282,12 +329,11 @@ while running:
         ball_x = screenWidth / 2
         ball_y = screenHeight / 2
     
+    # WRITE THE PONTUATION
     points = main_font.render(f"{player1_points} - {player2_points}", True, 'white')
     screen.blit(points, ((screenWidth / 2 - 20), 40))
 
-    #print(ball_vel)
-
-    #WIN
+    # WIN
     if player1_points == 5:
         player1_win = True
         win()
