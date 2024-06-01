@@ -87,13 +87,11 @@ def menu():
 
     play_bot_rect = pygame.Rect(screenWidth / 2 - 100, 220, 200, 50)
     play_local_rect = pygame.Rect(screenWidth / 2 - 100, 300, 200, 50)
-    configuration_rect = pygame.Rect(screenWidth / 2 - 100, 380, 200, 50)
-    exit_rect = pygame.Rect(screenWidth / 2 - 100, 460, 200, 50)
+    exit_rect = pygame.Rect(screenWidth / 2 - 100, 380, 200, 50)
 
     blank_rect_one = pygame.Rect(screenWidth / 2 - 100, 220, 200, 50)
     blank_rect_two = pygame.Rect(screenWidth / 2 - 100, 300, 200, 50)
-    blank_rect_three = pygame.Rect(screenWidth / 2 - 100, 380, 200, 50)
-    blank_rect_four = pygame.Rect(screenWidth / 2 - 100, 460, 200, 50)
+    blank_rect_four = pygame.Rect(screenWidth / 2 - 100, 380, 200, 50)
 
     running_menu = True
     while running_menu:
@@ -112,29 +110,23 @@ def menu():
                 if play_local_rect.collidepoint(mouse_pos):
                     friend_playing = True
                     running_menu = False
-                if configuration_rect.collidepoint(mouse_pos):
-                    print("config")
                 if exit_rect.collidepoint(mouse_pos):
                     pygame.quit()
                     sys.exit()
 
-        screen.blit(title, (screenWidth / 2 - 80, 100))
+        screen.blit(title, (screenWidth / 2 - 90, 100))
 
         pygame.draw.rect(screen, 'white', play_bot_rect, 2)
         pygame.draw.rect(screen, 'white', play_local_rect, 2)
-        pygame.draw.rect(screen, 'white', configuration_rect, 2)
         pygame.draw.rect(screen, 'white', exit_rect, 2)
 
         play_bot_txt = medium_font.render("Play with bot", True, txt_one_color)
         play_local_txt = medium_font.render("Play with a friend", True, txt_two_color)
-        config_txt = medium_font.render("Configurations", True, txt_three_color)
         exit_txt = medium_font.render("Exit", True, txt_four_color)
-
 
         screen.blit(play_bot_txt, (screenWidth / 2 - 80, 235))
         screen.blit(play_local_txt, (screenWidth / 2 - 80, 315))
-        screen.blit(config_txt, (screenWidth / 2 - 80, 395))
-        screen.blit(exit_txt, (screenWidth / 2 - 80, 475))
+        screen.blit(exit_txt, (screenWidth / 2 - 80, 395))
 
 
         if play_bot_rect.collidepoint(mouse_pos):
@@ -153,19 +145,10 @@ def menu():
             txt_two_color = (255, 255, 255)
 
 
-
-        if configuration_rect.collidepoint(mouse_pos):
-            pygame.draw.rect(screen, 'white', blank_rect_three)
-            txt_three_color = (0, 0, 0)
-            screen.blit(config_txt, (screenWidth / 2 - 80, 395))
-        else:
-            txt_three_color = (255, 255, 255)
-
-
         if exit_rect.collidepoint(mouse_pos):
             pygame.draw.rect(screen, 'white', blank_rect_four)
             txt_four_color = (0, 0, 0)
-            screen.blit(exit_txt, (screenWidth / 2 - 80, 475))
+            screen.blit(exit_txt, (screenWidth / 2 - 80, 395))
         else:
             txt_four_color= (255, 255, 255)
 
@@ -222,7 +205,6 @@ def win():
 
         pygame.display.update()
         clock.tick(FPS)
-
 
 menu()
 
